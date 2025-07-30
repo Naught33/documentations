@@ -3,259 +3,938 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Functions Usage Documentation</title>
+    <title>Database Functions Documentation</title>
     <link rel="stylesheet" href="database-docs.css">
 </head>
 <body>
-    <header>
-        <h1>Database Functions Usage Documentation</h1>
-        <p class="subtitle">Complete guide to using the database operations in db.ts</p>
-    </header>
-
-    <nav class="toc">
-        <h2>Table of Contents</h2>
-        <ul>
+    <nav class="sidebar">
+        <div class="logo">
+            <h2>DB Functions</h2>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#overview">Overview</a></li>
             <li><a href="#setup">Setup</a></li>
-            <li><a href="#general">General Patterns</a></li>
-            <li><a href="#users">User Operations</a></li>
-            <li><a href="#ads">Ad Operations</a></li>
-            <li><a href="#metrics">Metrics Operations</a></li>
-            <li><a href="#notes">Note Operations</a></li>
-            <li><a href="#subscriptions">Subscription Operations</a></li>
-            <li><a href="#alerts">Alert Operations</a></li>
-            <li><a href="#ai">AI Analysis Operations</a></li>
-            <li><a href="#abtests">A/B Test Operations</a></li>
-            <li><a href="#abvariants">A/B Test Variant Operations</a></li>
+            <li><a href="#types">Data Types</a></li>
+            <li><a href="#users">Users</a></li>
+            <li><a href="#ads">Ads</a></li>
+            <li><a href="#metrics">Metrics</a></li>
+            <li><a href="#notes">Notes</a></li>
+            <li><a href="#subscriptions">Subscriptions</a></li>
+            <li><a href="#alerts">Alerts</a></li>
+            <li><a href="#ai-analysis">AI Analysis</a></li>
+            <li><a href="#ab-tests">A/B Tests</a></li>
+            <li><a href="#ab-variants">A/B Variants</a></li>
             <li><a href="#error-handling">Error Handling</a></li>
-            <li><a href="#types">Type Definitions</a></li>
         </ul>
     </nav>
 
-    <main>
-        <section id="setup">
-            <h2>Setup</h2>
-            <div class="requirements">
-                <p>Before using any database functions, ensure these environment variables are configured:</p>
-                <div class="code-block">
-                    <code>SUPABASE_PROJECT_ID="your-supabase-project-url"</code><br>
-                    <code>SUPABASE_API_KEY="your-supabase-anon-key"</code>
-                </div>
-                <p>The database client is automatically initialized when importing from db.ts:</p>
-                <div class="code-block">
-                    <code>import { insertUser, getAd, updateMetrics } from './db';</code>
-                </div>
+    <main class="content">
+        <header>
+            <h1>Database Functions Documentation</h1>
+            <p>Comprehensive guide to all database operations using Supabase</p>
+        </header>
+
+        <section id="overview" class="section">
+            <h2>Overview</h2>
+            <p>This documentation covers all database functions for managing users, ads, metrics, notes, subscriptions, alerts, AI analyses, and A/B tests. The current implementation uses Supabase (PostgreSQL) but is designed to be migrated to MongoDB later.</p>
+            
+            <div class="warning">
+                <strong>⚠️ Note:</strong> This is a temporary Supabase configuration. The system will be migrated to MongoDB in the future.
             </div>
         </section>
 
-        <section id="general">
-            <h2>General Patterns</h2>
-            <p>All database functions follow these consistent patterns:</p>
+        <section id="setup" class="section">
+            <h2>Setup & Environment</h2>
+            <p>Before using these functions, ensure you have the following environment variables configured:</p>
             
-            <div class="pattern-grid">
-                <div class="pattern-card">
-                    <h3>Insert Functions</h3>
-                    <p>Create new records with complete objects</p>
-                    <div class="code-block">
-                        <code>insertX(item: Type): Promise&lt;void&gt;</code>
-                    </div>
-                    <p>Example:</p>
-                    <div class="code-block">
-                        <code>await insertUser({ _id: '123', ... });</code>
-                    </div>
-                </div>
+            <div class="code-block">
+                <pre><code>SUPABASE_PROJECT_ID=your_supabase_url
+SUPABASE_API_KEY=your_supabase_anon_key</code></pre>
+            </div>
 
-                <div class="pattern-card">
-                    <h3>Update Functions</h3>
-                    <p>Modify specific fields of existing records</p>
-                    <div class="code-block">
-                        <code>updateX(id: string, field: string, value: any): Promise&lt;any&gt;</code>
-                    </div>
-                    <p>Example:</p>
-                    <div class="code-block">
-                        <code>await updateUser('123', 'email', 'new@email.com');</code>
-                    </div>
-                </div>
-
-                <div class="pattern-card">
-                    <h3>Delete Functions</h3>
-                    <p>Remove records by their ID</p>
-                    <div class="code-block">
-                        <code>deleteX(id: string): Promise&lt;void&gt;</code>
-                    </div>
-                    <p>Example:</p>
-                    <div class="code-block">
-                        <code>await deleteUser('123');</code>
-                    </div>
-                </div>
-
-                <div class="pattern-card">
-                    <h3>Get Functions</h3>
-                    <p>Retrieve records with optional pagination</p>
-                    <div class="code-block">
-                        <code>getX(id: string): Promise&lt;Type&gt;</code><br>
-                        <code>getXs(start?: number, end?: number): Promise&lt;Type[]&gt;</code>
-                    </div>
-                    <p>Example:</p>
-                    <div class="code-block">
-                        <code>const user = await getUser('123');</code><br>
-                        <code>const users = await getUsers(0, 10);</code>
-                    </div>
-                </div>
+            <h3>Import Functions</h3>
+            <div class="code-block">
+                <pre><code>import { 
+    insertUser, updateUser, deleteUser, getUsers, getUser,
+    insertAd, updateAd, deleteAd, getAds, getAd,
+    // ... other functions
+} from './db';</code></pre>
             </div>
         </section>
 
-        <!-- User Operations Section -->
-        <section id="users">
-            <h2>User Operations</h2>
-            <p class="type-reference">Type: <code>User</code> (see <a href="#types">Type Definitions</a>)</p>
-            
-            <div class="function-doc">
-                <h3 class="function-signature">insertUser(user: User): Promise&lt;void&gt;</h3>
-                <p>Creates a new user record.</p>
-                <div class="example">
-                    <h4>Example</h4>
-                    <div class="code-block">
-                        const newUser: User = {<br>
-                        &nbsp;&nbsp;_id: 'user_123',<br>
-                        &nbsp;&nbsp;email: 'user@example.com',<br>
-                        &nbsp;&nbsp;role: 'admin',<br>
-                        &nbsp;&nbsp;supabaseid: 'supa_456',<br>
-                        &nbsp;&nbsp;subscriptionplane: 'premium',<br>
-                        &nbsp;&nbsp;createdat: new Date()<br>
-                        };<br><br>
-                        
-                        await insertUser(newUser);
-                    </div>
-                </div>
-            </div>
+        <section id="types" class="section">
+            <h2>Data Types</h2>
+            <p>All functions use TypeScript interfaces for type safety. Here are the main data types:</p>
 
-            <div class="function-doc">
-                <h3 class="function-signature">updateUser(id: string, field: string, value: any): Promise&lt;any&gt;</h3>
-                <p>Updates a specific field of a user record. Cannot update the _id field.</p>
-                <div class="example">
-                    <h4>Example</h4>
-                    <div class="code-block">
-                        // Update user's email<br>
-                        await updateUser('user_123', 'email', 'new@example.com');<br><br>
-                        
-                        // This will throw an error:<br>
-                        // await updateUser('user_123', '_id', 'new_id');
-                    </div>
-                </div>
-            </div>
-
-            <div class="function-doc">
-                <h3 class="function-signature">deleteUser(userId: string): Promise&lt;void&gt;</h3>
-                <p>Permanently deletes a user record.</p>
-                <div class="example">
-                    <h4>Example</h4>
-                    <div class="code-block">
-                        await deleteUser('user_123');
-                    </div>
-                </div>
-            </div>
-
-            <div class="function-doc">
-                <h3 class="function-signature">getUser(userId: string): Promise&lt;User&gt;</h3>
-                <p>Retrieves a single user by ID.</p>
-                <div class="example">
-                    <h4>Example</h4>
-                    <div class="code-block">
-                        const user = await getUser('user_123');<br>
-                        console.log(user.email); // 'user@example.com'
-                    </div>
-                </div>
-            </div>
-
-            <div class="function-doc">
-                <h3 class="function-signature">getUsers(startPage?: number, endPage?: number): Promise&lt;User[]&gt;</h3>
-                <p>Retrieves multiple users with optional pagination.</p>
-                <div class="example">
-                    <h4>Examples</h4>
-                    <div class="code-block">
-                        // Get all users<br>
-                        const allUsers = await getUsers();<br><br>
-                        
-                        // Get users 10-20 (pagination)<br>
-                        const pageOfUsers = await getUsers(10, 20);<br><br>
-                        
-                        // Invalid range throws error:<br>
-                        // await getUsers(20, 10); // Error: start page > end page
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Continue with other sections (Ads, Metrics, etc.) following the same pattern -->
-
-        <section id="error-handling">
-            <h2>Error Handling</h2>
-            <p>All database functions throw errors in these cases:</p>
-            <ul class="error-cases">
-                <li>Missing or invalid parameters</li>
-                <li>Attempting to modify protected fields (like _id)</li>
-                <li>Database connection issues</li>
-                <li>Invalid pagination ranges</li>
-                <li>Record not found (for get/update/delete operations)</li>
-            </ul>
-            
-            <div class="best-practice">
-                <h3>Recommended Usage Pattern</h3>
-                <div class="code-block">
-                    try {<br>
-                    &nbsp;&nbsp;const user = await getUser('user_123');<br>
-                    &nbsp;&nbsp;await updateUser(user._id, 'email', 'updated@email.com');<br>
-                    } catch (error) {<br>
-                    &nbsp;&nbsp;console.error('Database operation failed:', error.message);<br>
-                    &nbsp;&nbsp;// Handle specific error types if needed<br>
-                    &nbsp;&nbsp;if (error.message.includes('not found')) {<br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;// Handle missing record case<br>
-                    &nbsp;&nbsp;}<br>
-                    }
-                </div>
-            </div>
-        </section>
-
-        <section id="types">
-            <h2>Type Definitions</h2>
-            <p>All database operations use these TypeScript types from <code>dbTypes.ts</code>:</p>
-            
             <div class="type-definition">
                 <h3>User</h3>
                 <div class="code-block">
-                    type User = {<br>
-                    &nbsp;&nbsp;_id: string,<br>
-                    &nbsp;&nbsp;email: string,<br>
-                    &nbsp;&nbsp;role: string,<br>
-                    &nbsp;&nbsp;supabaseid: string,<br>
-                    &nbsp;&nbsp;subscriptionplane: string,<br>
-                    &nbsp;&nbsp;createdat: Date<br>
-                    };
+                    <pre><code>type User = {
+    _id: string,
+    email: string,
+    role: string,
+    supabaseid: string,
+    subscriptionplane: string,
+    createdat: Date
+};</code></pre>
                 </div>
             </div>
 
-            <!-- Include all other type definitions similarly -->
-            
             <div class="type-definition">
-                <h3>ABTestVariant</h3>
+                <h3>Ad</h3>
                 <div class="code-block">
-                    type ABTestVariant = {<br>
-                    &nbsp;&nbsp;_id: string,<br>
-                    &nbsp;&nbsp;abtestid: string,<br>
-                    &nbsp;&nbsp;adid: string,<br>
-                    &nbsp;&nbsp;variantname: string<br>
-                    };
+                    <pre><code>type Ad = {
+    _id: string,
+    userid: string,
+    title: string,
+    platform: string,
+    campaignstart: Date,
+    campaignend: Date,
+    uploadedat: Date
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="type-definition">
+                <h3>Metrics</h3>
+                <div class="code-block">
+                    <pre><code>type Metrics = {
+    _id: string,
+    adid: string,
+    date: Date,
+    impressions: number,
+    clicks: number,
+    cost: number,
+    conversions: number,
+    ctr: number,
+    cpc: number,
+    createdat: Date
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="collapsible">
+                <button class="collapsible-btn">Show All Types</button>
+                <div class="collapsible-content">
+                    <div class="type-definition">
+                        <h4>Note</h4>
+                        <div class="code-block">
+                            <pre><code>type Note = {
+    _id: string,
+    adid: string,
+    userid: string,
+    text: string,
+    created: Date
+};</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="type-definition">
+                        <h4>Subscription</h4>
+                        <div class="code-block">
+                            <pre><code>type Subscription = {
+    _id: string,
+    userid: string,
+    stripecustomerid: string,
+    currentplan: string,
+    status: string,
+    startdate: Date,
+    renewaldate: Date
+};</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="type-definition">
+                        <h4>Alert</h4>
+                        <div class="code-block">
+                            <pre><code>type Alert = {
+    _id: string,
+    userid: string,
+    adid: string,
+    type: string,
+    triggered: boolean,
+    rule: JSON,
+    created: Date
+};</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="type-definition">
+                        <h4>AiAnalysis</h4>
+                        <div class="code-block">
+                            <pre><code>type AiAnalysis = {
+    _id: string,
+    adid: string,
+    score: string,
+    summary: string,
+    recommendations: string,
+    createdate: Date
+};</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="type-definition">
+                        <h4>ABTest</h4>
+                        <div class="code-block">
+                            <pre><code>type ABTest = {
+    _id: string,
+    userif: string,
+    testname: string,
+    startdate: Date,
+    enddate: Date
+};</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="type-definition">
+                        <h4>ABTestVariant</h4>
+                        <div class="code-block">
+                            <pre><code>type ABTestVariant = {
+    _id: string,
+    abtestid: string,
+    adid: string,
+    variantname: string
+};</code></pre>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
+
+        <section id="users" class="section">
+            <h2>User Functions</h2>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertUser(user: User): Promise&lt;void&gt;</h3>
+                    <p>Creates a new user in the database.</p>
+                    <div class="code-block">
+                        <pre><code>const newUser: User = {
+    _id: "user123",
+    email: "user@example.com",
+    role: "admin",
+    supabaseid: "supabase_id",
+    subscriptionplane: "premium",
+    createdat: new Date()
+};
+
+await insertUser(newUser);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateUser(id: string, field: string, value: any): Promise&lt;any&gt;</h3>
+                    <p>Updates a specific field for a user. Cannot update the <code>_id</code> field.</p>
+                    <div class="code-block">
+                        <pre><code>// Update user email
+const updatedUser = await updateUser("user123", "email", "newemail@example.com");
+
+// Update subscription plan
+await updateUser("user123", "subscriptionplane", "basic");</code></pre>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Bug:</strong> Function queries wrong table (ad_metrics_daily instead of ab_test_variants).
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="error-handling" class="section">
+            <h2>Error Handling</h2>
+            <p>All functions throw errors that should be handled in your application code.</p>
+
+            <h3>Common Error Scenarios</h3>
+            <div class="error-scenarios">
+                <div class="error-item">
+                    <h4>Environment Variables Missing</h4>
+                    <p>Thrown when SUPABASE_PROJECT_ID or SUPABASE_API_KEY are not configured.</p>
+                    <div class="code-block">
+                        <pre><code>Error: "Supabase credentials are missing or invalid"</code></pre>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <h4>ID Field Update Attempts</h4>
+                    <p>Thrown when trying to update the <code>_id</code> field in any update function.</p>
+                    <div class="code-block">
+                        <pre><code>Error: "value _id cannot be changed!"
+Error: "field of value _id cannot be changed!"</code></pre>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <h4>Pagination Errors</h4>
+                    <p>Thrown when endPage is less than startPage in pagination functions.</p>
+                    <div class="code-block">
+                        <pre><code>Error: "start page cannot be greater than end page!"</code></pre>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <h4>Database Errors</h4>
+                    <p>Supabase-specific errors (network, authentication, constraints, etc.)</p>
+                    <div class="code-block">
+                        <pre><code>// Example error handling
+try {
+    await insertUser(newUser);
+} catch (error) {
+    console.error('Failed to insert user:', error.message);
+    // Handle error appropriately
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Best Practices</h3>
+            <div class="best-practices">
+                <ul>
+                    <li>Always wrap database calls in try-catch blocks</li>
+                    <li>Validate input data before calling functions</li>
+                    <li>Check for undefined/null values in returned data</li>
+                    <li>Use proper TypeScript types for better error prevention</li>
+                    <li>Log errors for debugging and monitoring</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="known-issues" class="section">
+            <h2>Known Issues & Bugs</h2>
+            <p>The following issues have been identified in the current implementation:</p>
+
+            <div class="issues-list">
+                <div class="issue">
+                    <h3>🐛 updateMetrics Function</h3>
+                    <p>The update query uses hardcoded placeholder values instead of the provided parameters.</p>
+                    <div class="code-block">
+                        <pre><code>// Current (incorrect):
+.update({ other_column: 'otherValue' })
+.eq('some_column', 'someValue')
+
+// Should be:
+.update({ [field]: value })
+.eq('_id', metricId)</code></pre>
+                    </div>
+                </div>
+
+                <div class="issue">
+                    <h3>🐛 updateABtest Function</h3>
+                    <p>Similar issue with hardcoded placeholder values in the update query.</p>
+                </div>
+
+                <div class="issue">
+                    <h3>🐛 getSubscription Function</h3>
+                    <p>Missing return statement, so the function doesn't return the fetched data.</p>
+                    <div class="code-block">
+                        <pre><code>// Add this line:
+return subscriptions;</code></pre>
+                    </div>
+                </div>
+
+                <div class="issue">
+                    <h3>🐛 getABtestVariant Function</h3>
+                    <p>Missing WHERE clause in the query, will return all variants instead of specific one.</p>
+                    <div class="code-block">
+                        <pre><code>// Add:
+.eq('_id', id)</code></pre>
+                    </div>
+                </div>
+
+                <div class="issue">
+                    <h3>🐛 getABtestVariants Function</h3>
+                    <p>Queries the wrong table (ad_metrics_daily instead of ab_test_variants).</p>
+                    <div class="code-block">
+                        <pre><code>// Change:
+.from('ad_metrics_daily')
+// To:
+.from('ab_test_variants')</code></pre>
+                    </div>
+                </div>
+
+                <div class="issue">
+                    <h3>📝 ABTest Type Typo</h3>
+                    <p>The <code>userif</code> field should probably be <code>userid</code> for consistency.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="migration-notes" class="section">
+            <h2>Migration to MongoDB</h2>
+            <p>When migrating from Supabase to MongoDB, consider the following:</p>
+
+            <div class="migration-checklist">
+                <h3>Preparation Steps</h3>
+                <ul>
+                    <li>Update environment variables (MongoDB connection string)</li>
+                    <li>Replace Supabase client with MongoDB driver</li>
+                    <li>Adapt query syntax from SQL to MongoDB queries</li>
+                    <li>Handle pagination differently (MongoDB uses skip/limit)</li>
+                    <li>Update error handling for MongoDB-specific errors</li>
+                    <li>Consider using Mongoose for schema validation</li>
+                </ul>
+
+                <h3>Function Changes Required</h3>
+                <ul>
+                    <li>Replace <code>.select()</code> with <code>.find()</code></li>
+                    <li>Replace <code>.insert()</code> with <code>.insertOne()/.insertMany()</code></li>
+                    <li>Replace <code>.update()</code> with <code>.updateOne()/.updateMany()</code></li>
+                    <li>Replace <code>.delete()</code> with <code>.deleteOne()/.deleteMany()</code></li>
+                    <li>Update pagination from <code>.range()</code> to <code>.skip().limit()</code></li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 Database Documentation. Last updated: July 2024</p>
+        </footer>
     </main>
 
-    <footer>
-        <p>Database API Documentation | Generated from db.ts | Last updated: <span id="update-date"></span></p>
-    </footer>
-
     <script>
-        document.getElementById('update-date').textContent = new Date().toLocaleDateString();
+        // Collapsible sections
+        document.querySelectorAll('.collapsible-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const isOpen = content.style.display === 'block';
+                
+                content.style.display = isOpen ? 'none' : 'block';
+                button.textContent = isOpen ? 'Show All Types' : 'Hide All Types';
+            });
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Highlight active section in navigation
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let currentSection = '';
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom >= 100) {
+                    currentSection = section.id;
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === currentSection) {
+                    link.classList.add('active');
+                }
+            });
+        });
     </script>
 </body>
-</html>
+</html>️ Restriction:</strong> The <code>_id</code> field cannot be changed.
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteUser(userId: string): Promise&lt;void&gt;</h3>
+                    <p>Permanently deletes a user from the database.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteUser("user123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getUser(userId: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single user by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const user = await getUser("user123");
+console.log(user.email);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getUsers(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple users with optional pagination.</p>
+                    <div class="code-block">
+                        <pre><code>// Get all users
+const allUsers = await getUsers();
+
+// Get users with pagination (items 0-9)
+const paginatedUsers = await getUsers(0, 9);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ads" class="section">
+            <h2>Ad Functions</h2>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertAd(ad: Ad): Promise&lt;any&gt;</h3>
+                    <p>Creates a new ad and returns the created data.</p>
+                    <div class="code-block">
+                        <pre><code>const newAd: Ad = {
+    _id: "ad123",
+    userid: "user123",
+    title: "Summer Sale Campaign",
+    platform: "Facebook",
+    campaignstart: new Date("2024-06-01"),
+    campaignend: new Date("2024-06-30"),
+    uploadedat: new Date()
+};
+
+const createdAd = await insertAd(newAd);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateAd(id: string, field: string, value: any): Promise&lt;any&gt;</h3>
+                    <p>Updates a specific field for an ad and returns the updated data.</p>
+                    <div class="code-block">
+                        <pre><code>const updatedAd = await updateAd("ad123", "title", "Updated Campaign Title");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteAd(adid: string): Promise&lt;void&gt;</h3>
+                    <p>Permanently deletes an ad from the database.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteAd("ad123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getAd(adid: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single ad by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const ad = await getAd("ad123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getAds(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple ads with optional pagination.</p>
+                    <div class="code-block">
+                        <pre><code>// Get all ads
+const allAds = await getAds();
+
+// Get ads with pagination
+const paginatedAds = await getAds(0, 19);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="metrics" class="section">
+            <h2>Metrics Functions</h2>
+            <p>Functions for managing daily ad performance metrics.</p>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertMetrics(metrics: Metrics): Promise&lt;void&gt;</h3>
+                    <p>Stores daily metrics for an ad.</p>
+                    <div class="code-block">
+                        <pre><code>const dailyMetrics: Metrics = {
+    _id: "metric123",
+    adid: "ad123",
+    date: new Date(),
+    impressions: 10000,
+    clicks: 150,
+    cost: 45.50,
+    conversions: 12,
+    ctr: 1.5,
+    cpc: 0.30,
+    createdat: new Date()
+};
+
+await insertMetrics(dailyMetrics);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateMetrics(metricId: string, field: string, value: any): Promise&lt;void&gt;</h3>
+                    <p>Updates a specific metric field. Cannot update the <code>_id</code> field.</p>
+                    <div class="code-block">
+                        <pre><code>await updateMetrics("metric123", "conversions", 15);</code></pre>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Note:</strong> Current implementation has a bug in the update query. It needs to be fixed to use the correct field and value parameters.
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteMetrics(metricId: string): Promise&lt;void&gt;</h3>
+                    <p>Deletes metrics data.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteMetrics("metric123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getMetric(metricId: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single metric record by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const metric = await getMetric("metric123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getMetrics(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple metrics with pagination support.</p>
+                    <div class="code-block">
+                        <pre><code>const allMetrics = await getMetrics();
+const recentMetrics = await getMetrics(0, 49);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="notes" class="section">
+            <h2>Notes Functions</h2>
+            <p>Functions for managing user notes on ads.</p>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertNote(noteDetails: Note): Promise&lt;void&gt;</h3>
+                    <p>Creates a new note for an ad.</p>
+                    <div class="code-block">
+                        <pre><code>const newNote: Note = {
+    _id: "note123",
+    adid: "ad123",
+    userid: "user123",
+    text: "This campaign performed well in Q2",
+    created: new Date()
+};
+
+await insertNote(newNote);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateNote(noteId: string, field: string, value: any): Promise&lt;void&gt;</h3>
+                    <p>Updates a note field. Cannot update the <code>_id</code> field.</p>
+                    <div class="code-block">
+                        <pre><code>await updateNote("note123", "text", "Updated note content");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteNote(noteId: string): Promise&lt;void&gt;</h3>
+                    <p>Deletes a note.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteNote("note123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getNote(noteId: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single note by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const note = await getNote("note123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getNotes(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple notes with pagination.</p>
+                    <div class="code-block">
+                        <pre><code>const allNotes = await getNotes();
+const limitedNotes = await getNotes(0, 9);</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="subscriptions" class="section">
+            <h2>Subscription Functions</h2>
+            <p>Functions for managing user subscriptions and billing.</p>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertSubscription(subscription: Subscription): Promise&lt;void&gt;</h3>
+                    <p>Creates a new subscription record.</p>
+                    <div class="code-block">
+                        <pre><code>const newSubscription: Subscription = {
+    _id: "sub123",
+    userid: "user123",
+    stripecustomerid: "cus_stripe123",
+    currentplan: "premium",
+    status: "active",
+    startdate: new Date(),
+    renewaldate: new Date("2024-12-31")
+};
+
+await insertSubscription(newSubscription);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateSubscription(subId: string, field: string, value: any): Promise&lt;void&gt;</h3>
+                    <p>Updates subscription details.</p>
+                    <div class="code-block">
+                        <pre><code>await updateSubscription("sub123", "status", "cancelled");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteSubscription(subId: string): Promise&lt;void&gt;</h3>
+                    <p>Deletes a subscription record.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteSubscription("sub123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getSubscription(subId: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single subscription by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const subscription = await getSubscription("sub123");</code></pre>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Bug:</strong> This function doesn't return the data. Missing <code>return subscriptions;</code>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getSubscriptions(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple subscriptions with pagination.</p>
+                    <div class="code-block">
+                        <pre><code>const allSubscriptions = await getSubscriptions();</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="alerts" class="section">
+            <h2>Alert Functions</h2>
+            <p>Functions for managing automated alerts and notifications.</p>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertAlert(alert: Alert): Promise&lt;void&gt;</h3>
+                    <p>Creates a new alert rule.</p>
+                    <div class="code-block">
+                        <pre><code>const newAlert: Alert = {
+    _id: "alert123",
+    userid: "user123",
+    adid: "ad123",
+    type: "performance_drop",
+    triggered: false,
+    rule: { threshold: 0.5, metric: "ctr" },
+    created: new Date()
+};
+
+await insertAlert(newAlert);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateAlerts(id: string, field: string, value: string): Promise&lt;void&gt;</h3>
+                    <p>Updates an alert. Uses upsert operation.</p>
+                    <div class="code-block">
+                        <pre><code>await updateAlerts("alert123", "triggered", "true");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteAlerts(id: string): Promise&lt;void&gt;</h3>
+                    <p>Deletes an alert.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteAlerts("alert123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getAlert(alertid: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single alert by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const alert = await getAlert("alert123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getAlerts(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple alerts with pagination.</p>
+                    <div class="code-block">
+                        <pre><code>const allAlerts = await getAlerts();</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ai-analysis" class="section">
+            <h2>AI Analysis Functions</h2>
+            <p>Functions for managing AI-generated ad performance analyses.</p>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertAiAnalysis(AIanalysis: AiAnalysis): Promise&lt;void&gt;</h3>
+                    <p>Stores AI analysis results for an ad.</p>
+                    <div class="code-block">
+                        <pre><code>const analysis: AiAnalysis = {
+    _id: "analysis123",
+    adid: "ad123",
+    score: "8.5",
+    summary: "Strong performance with room for improvement",
+    recommendations: "Increase budget by 20% and test new creative",
+    createdate: new Date()
+};
+
+await insertAiAnalysis(analysis);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateAiAnalyses(id: string, field: string, value: any): Promise&lt;void&gt;</h3>
+                    <p>Updates AI analysis data.</p>
+                    <div class="code-block">
+                        <pre><code>await updateAiAnalyses("analysis123", "score", "9.0");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteAiAnalyses(id: string): Promise&lt;void&gt;</h3>
+                    <p>Deletes an AI analysis record.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteAiAnalyses("analysis123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getAiAnalysis(id: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single AI analysis by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const analysis = await getAiAnalysis("analysis123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getAiAnalyses(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple AI analyses with pagination.</p>
+                    <div class="code-block">
+                        <pre><code>const allAnalyses = await getAiAnalyses();</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ab-tests" class="section">
+            <h2>A/B Test Functions</h2>
+            <p>Functions for managing A/B testing experiments.</p>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertABtest(test: ABTest): Promise&lt;void&gt;</h3>
+                    <p>Creates a new A/B test.</p>
+                    <div class="code-block">
+                        <pre><code>const newTest: ABTest = {
+    _id: "test123",
+    userif: "user123", // Note: seems like a typo, should be userid
+    testname: "Header Color Test",
+    startdate: new Date(),
+    enddate: new Date("2024-08-01")
+};
+
+await insertABtest(newTest);</code></pre>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Typo:</strong> The field <code>userif</code> in ABTest type should probably be <code>userid</code>.
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateABtest(testId: string, field: string, value: any): Promise&lt;void&gt;</h3>
+                    <p>Updates A/B test details.</p>
+                    <div class="code-block">
+                        <pre><code>await updateABtest("test123", "testname", "Updated Test Name");</code></pre>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Bug:</strong> Update query uses placeholder values instead of proper parameters.
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteABtest(testId: string): Promise&lt;void&gt;</h3>
+                    <p>Deletes an A/B test.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteABtest("test123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getABtest(testId: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single A/B test by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const test = await getABtest("test123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getABTestes(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple A/B tests with pagination.</p>
+                    <div class="code-block">
+                        <pre><code>const allTests = await getABTestes();</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ab-variants" class="section">
+            <h2>A/B Test Variant Functions</h2>
+            <p>Functions for managing variants within A/B tests.</p>
+            
+            <div class="function-group">
+                <div class="function">
+                    <h3>insertABtestVariant(variant: ABTestVariant): Promise&lt;void&gt;</h3>
+                    <p>Creates a new test variant.</p>
+                    <div class="code-block">
+                        <pre><code>const newVariant: ABTestVariant = {
+    _id: "variant123",
+    abtestid: "test123",
+    adid: "ad123",
+    variantname: "Blue Header"
+};
+
+await insertABtestVariant(newVariant);</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>updateABtestVariant(id: string, field: string, value: any): Promise&lt;void&gt;</h3>
+                    <p>Updates a test variant.</p>
+                    <div class="code-block">
+                        <pre><code>await updateABtestVariant("variant123", "variantname", "Red Header");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>deleteABtestVariant(id: string): Promise&lt;void&gt;</h3>
+                    <p>Deletes a test variant.</p>
+                    <div class="code-block">
+                        <pre><code>await deleteABtestVariant("variant123");</code></pre>
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getABtestVariant(id: string): Promise&lt;any&gt;</h3>
+                    <p>Retrieves a single variant by ID.</p>
+                    <div class="code-block">
+                        <pre><code>const variant = await getABtestVariant("variant123");</code></pre>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠️ Bug:</strong> Missing WHERE clause in the query. Will return all variants instead of specific one.
+                    </div>
+                </div>
+
+                <div class="function">
+                    <h3>getABtestVariants(startPage?: number, endPage?: number): Promise&lt;any&gt;</h3>
+                    <p>Retrieves multiple variants with pagination.</p>
+                    <div class="code-block">
+                        <pre><code>const allVariants = await getABtestVariants();</code></pre>
+                    </div>
+                    <div class="warning">
+                        <strong>⚠
