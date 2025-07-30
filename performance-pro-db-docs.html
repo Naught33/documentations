@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database API Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            background-color: #eaf2f8;
+            padding: 8px 12px;
+            border-left: 4px solid #3498db;
+        }
+        
+        h3 {
+            color: #16a085;
+            margin-top: 20px;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .note {
+            background-color: #fffde7;
+            border-left: 4px solid #ffd600;
+            padding: 12px;
+            margin: 15px 0;
+        }
+        
+        .function-signature {
+            background-color: #e8f5e9;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: bold;
+        }
+        
+        .example-title {
+            font-style: italic;
+            margin-top: 15px;
+        }
+        
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Database API Documentation</h1>
+    
+    <p>This documentation covers the usage of all database functions in <code>db.ts</code> which interact with a Supabase PostgreSQL database.</p>
+    
+    <div class="note">
+        <strong>Note:</strong> Before using any functions, ensure you have these environment variables configured:
+        <div class="code-block">
+            SUPABASE_PROJECT_ID="your-supabase-project-url"<br>
+            SUPABASE_API_KEY="your-supabase-anon-key"
+        </div>
+    </div>
+    
+    <h2>General Patterns</h2>
+    
+    <p>All database functions follow these patterns:</p>
+    
+    <ul>
+        <li><strong>Insert functions</strong>: Take a complete object of the specified type and create a new record</li>
+        <li><strong>Update functions</strong>: Take an ID, field name, and new value to update a specific field</li>
+        <li><strong>Delete functions</strong>: Take an ID to delete a specific record</li>
+        <li><strong>Get functions</strong>:
+            <ul>
+                <li><code>getX(id: string)</code> - Get a single record by ID</li>
+                <li><code>getXs(startPage?, endPage?)</code> - Get multiple records with optional pagination</li>
+            </ul>
+        </li>
+    </ul>
+    
+    <h2>User Operations</h2>
+    
+    <div class="function-signature">insertUser(user: User): Promise&lt;void&gt;</div>
+    <p>Creates a new user.</p>
+    
+    <div class="example-title">Example:</div>
+    <div class="code-block">
+        const newUser: User = {<br>
+            &nbsp;&nbsp;_id: 'user123',<br>
+            &nbsp;&nbsp;email: 'test@example.com',<br>
+            &nbsp;&nbsp;role: 'admin',<br>
+            &nbsp;&nbsp;supabaseid: 'supa123',<br>
+            &nbsp;&nbsp;subscriptionplane: 'premium',<br>
+            &nbsp;&nbsp;createdat: new Date()<br>
+        };<br>
+        await insertUser(newUser);
+    </div>
+    
+    <div class="function-signature">updateUser(id: string, field: string, value: any): Promise&lt;any&gt;</div>
+    <p>Updates a specific field of a user.</p>
+    
+    <div class="example-title">Example:</div>
+    <div class="code-block">
+        await updateUser('user123', 'email', 'new@example.com');
+    </div>
+    
+    <div class="function-signature">deleteUser(userId: string): Promise&lt;void&gt;</div>
+    <p>Deletes a user by ID.</p>
+    
+    <div class="function-signature">getUser(userId: string): Promise&lt;any&gt;</div>
+    <p>Gets a single user by ID.</p>
+    
+    <div class="function-signature">getUsers(startPage?: number, endPage?: number): Promise&lt;any&gt;</div>
+    <p>Gets all users with optional pagination.</p>
+    
+    <div class="example-title">Examples:</div>
+    <div class="code-block">
+        // Get all users<br>
+        const allUsers = await getUsers();<br><br>
+        
+        // Get users 10-20<br>
+        const pagedUsers = await getUsers(10, 20);
+    </div>
+    
+    <h2>Ad Operations</h2>
+    
+    <div class="function-signature">insertAd(ad: Ad): Promise&lt;any&gt;</div>
+    <p>Creates a new ad.</p>
+    
+    <div class="example-title">Example:</div>
+    <div class="code-block">
+        const newAd: Ad = {<br>
+            &nbsp;&nbsp;_id: 'ad123',<br>
+            &nbsp;&nbsp;userid: 'user123',<br>
+            &nbsp;&nbsp;title: 'Summer Sale',<br>
+            &nbsp;&nbsp;platform: 'facebook',<br>
+            &nbsp;&nbsp;campaignstart: new Date('2023-06-01'),<br>
+            &nbsp;&nbsp;campaignend: new Date('2023-06-30'),<br>
+            &nbsp;&nbsp;uploadedat: new Date()<br>
+        };<br>
+        await insertAd(newAd);
+    </div>
+    
+    <!-- Continue with other operations in the same pattern -->
+    
+    <h2>Error Handling</h2>
+    
+    <p>All functions throw errors when:</p>
+    <ul>
+        <li>Required parameters are missing</li>
+        <li>Database operations fail</li>
+        <li>Invalid operations are attempted (like updating an _id field)</li>
+    </ul>
+    
+    <p>Always wrap database calls in try/catch blocks:</p>
+    <div class="code-block">
+        try {<br>
+            &nbsp;&nbsp;await insertUser(newUser);<br>
+        } catch (error) {<br>
+            &nbsp;&nbsp;console.error('Database error:', error);<br>
+        }
+    </div>
+    
+    <h2>Type Definitions</h2>
+    
+    <p>Refer to <code>dbTypes.ts</code> for complete type definitions of all entities:</p>
+    
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>User</td>
+            <td>Contains user information including email, role, and subscription</td>
+        </tr>
+        <tr>
+            <td>Ad</td>
+            <td>Contains advertising campaign details</td>
+        </tr>
+        <tr>
+            <td>Metrics</td>
+            <td>Contains performance metrics for ads</td>
+        </tr>
+        <!-- Add other types as needed -->
+    </table>
+</body>
+</html>
